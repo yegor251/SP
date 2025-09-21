@@ -11,9 +11,6 @@ HMENU MenuManager::CreateMainMenu() {
     hMainMenu = CreateMenu();
     
     hFileMenu = CreatePopupMenu();
-    AppendMenu(hFileMenu, MF_STRING, IDM_FILE_OPEN, L"Open");
-    AppendMenu(hFileMenu, MF_STRING, IDM_FILE_SAVE, L"Save");
-    AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenu(hFileMenu, MF_STRING, IDM_FILE_EXIT, L"Exit");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
     

@@ -4,6 +4,7 @@
 #include "AboutDialog.h"
 #include "Resource.h"
 #include "DarkScreen.h"
+#include "TextEditor.h"
 
 class MainWindow {
 private:
@@ -11,6 +12,7 @@ private:
     HINSTANCE hInstance;
     MenuManager menuManager;
     DarkScreen* darkScreen;
+    TextEditor* textEditor;
     POINT lastMousePos;
     
 public:
@@ -28,6 +30,8 @@ private:
     void OnCommand(WPARAM wParam);
     void OnMouseMove(int x, int y);
     void OnKeyDown(WPARAM wParam);
+    void OnLeftMouseClick(int x, int y);
     void OnMouseClick();
     void OnTimer(WPARAM wParam);
+    void OnSize();
 };

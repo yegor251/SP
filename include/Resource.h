@@ -6,6 +6,7 @@
 #define IDM_EDIT_CUT       2001
 #define IDM_EDIT_COPY      2002
 #define IDM_EDIT_PASTE     2003
+#define IDM_EDIT_SHOW_EDITOR 2004
 #define IDM_HELP_ABOUT     3001
 
 #define IDD_ABOUT          4001

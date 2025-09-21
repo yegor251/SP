@@ -35,6 +35,11 @@ void DarkScreen::StartScreensaver() {
         spriteX = rect.right / 2;
         spriteY = rect.bottom / 2;
 
+        HWND hwndEdit = FindWindowEx(hwndMain, nullptr, L"EDIT", nullptr);
+        if (hwndEdit) {
+            ShowWindow(hwndEdit, SW_HIDE);
+        }
+
         InvalidateRect(hwndMain, nullptr, TRUE);
     }
 }
@@ -44,6 +49,12 @@ void DarkScreen::StopScreensaver() {
         bScreensaverActive = FALSE;
         KillTimer(hwndMain, IDT_SPRITE_TIMER);
         ShowCursor(TRUE);
+        
+        HWND hwndEdit = FindWindowEx(hwndMain, nullptr, L"EDIT", nullptr);
+        if (hwndEdit) {
+            ShowWindow(hwndEdit, SW_SHOW);
+        }
+        
         StartInactivityTimer();
         InvalidateRect(hwndMain, nullptr, TRUE);
     }

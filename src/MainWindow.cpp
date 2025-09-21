@@ -2,13 +2,14 @@
 #include <tchar.h>
 
 MainWindow::MainWindow(HINSTANCE hInst) 
-    : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr) {
+    : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr), textEditor(nullptr) {
     lastMousePos.x = 0;
     lastMousePos.y = 0;
 }
 
 MainWindow::~MainWindow() {
     delete darkScreen;
+    delete textEditor;
 }
 
 bool MainWindow::Create() {
@@ -45,6 +46,11 @@ bool MainWindow::Create() {
 
     if (hwndMain) {
         darkScreen = new DarkScreen(hwndMain);
+        textEditor = new TextEditor(hwndMain, hInstance);
+        if (textEditor) {
+            textEditor->Create();
+            textEditor->Show();
+        }
     }
 
     return hwndMain != nullptr;
@@ -82,6 +88,10 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
             pThis->OnCommand(wParam);
             return 0;
 
+        case WM_SIZE:
+            pThis->OnSize();
+            return 0;
+
         case WM_MOUSEMOVE:
             pThis->OnMouseMove(LOWORD(lParam), HIWORD(lParam));
             return 0;
@@ -91,6 +101,9 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
             return 0;
 
         case WM_LBUTTONDOWN:
+            pThis->OnLeftMouseClick(LOWORD(lParam), HIWORD(lParam));
+            return 0;
+            
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
             pThis->OnMouseClick();
@@ -126,11 +139,6 @@ void MainWindow::OnPaint() {
         GetClientRect(hwndMain, &rect);
         
         FillRect(hdc, &rect, (HBRUSH)(COLOR_WINDOW + 1));
-        
-        SetTextAlign(hdc, TA_CENTER | TA_BASELINE);
-        SetBkMode(hdc, TRANSPARENT);
-        TextOut(hdc, rect.right / 2, rect.bottom / 2, 
-               L"Hello", 5);
     }
     
     EndPaint(hwndMain, &ps);
@@ -138,13 +146,6 @@ void MainWindow::OnPaint() {
 
 void MainWindow::OnCommand(WPARAM wParam) {
     switch (LOWORD(wParam)) {
-    case IDM_FILE_OPEN:
-        MessageBox(hwndMain, L"Open function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
-        break;
-        
-    case IDM_FILE_SAVE:
-        MessageBox(hwndMain, L"Save function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
-        break;
         
     case IDM_FILE_EXIT:
         PostMessage(hwndMain, WM_CLOSE, 0, 0);
@@ -161,6 +162,7 @@ void MainWindow::OnCommand(WPARAM wParam) {
     case IDM_EDIT_PASTE:
         MessageBox(hwndMain, L"Paste function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
         break;
+        
         
     case IDM_HELP_ABOUT:
         AboutDialog::ShowDialog(hwndMain);
@@ -185,6 +187,16 @@ void MainWindow::OnKeyDown(WPARAM wParam) {
     }
 }
 
+void MainWindow::OnLeftMouseClick(int x, int y) {
+    if (darkScreen) {
+        darkScreen->OnUserActivity();
+    }
+    
+    if (textEditor && textEditor->IsVisible()) {
+        textEditor->SetEditorFocus();
+    }
+}
+
 void MainWindow::OnMouseClick() {
     if (darkScreen) {
         darkScreen->OnUserActivity();
@@ -196,3 +208,10 @@ void MainWindow::OnTimer(WPARAM wParam) {
         darkScreen->OnTimer(wParam);
     }
 }
+
+void MainWindow::OnSize() {
+    if (textEditor) {
+        textEditor->Resize();
+    }
+}
+
