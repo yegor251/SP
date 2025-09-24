@@ -28,6 +28,8 @@ public:
     void Copy();
     void Paste();
     void SelectAll();
+    bool IsModified() const;
+    void ResetModified();
     
     HWND GetHandle() const { return hwndEdit; }
     

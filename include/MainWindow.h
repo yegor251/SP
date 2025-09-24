@@ -14,6 +14,7 @@ private:
     DarkScreen* darkScreen;
     TextEditor* textEditor;
     POINT lastMousePos;
+    std::wstring currentFilePath;
     
 public:
     MainWindow(HINSTANCE hInst);

@@ -14,6 +14,7 @@ set(SOURCES
     src/DarkScreen.cpp
     src/TextEditor.cpp
     src/ClipboardManager.cpp
+    src/FileManager.cpp
 )
 
 set(HEADERS
@@ -24,6 +25,7 @@ set(HEADERS
     include/DarkScreen.h
     include/TextEditor.h
     include/ClipboardManager.h
+    include/FileManager.h
 )
 
 add_executable(BasicWinAPI WIN32 ${SOURCES} ${HEADERS})

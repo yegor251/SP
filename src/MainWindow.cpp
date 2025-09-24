@@ -1,5 +1,8 @@
 #include "MainWindow.h"
 #include <tchar.h>
+#include <commdlg.h>
+#include <string>
+#include "FileManager.h"
 
 MainWindow::MainWindow(HINSTANCE hInst) 
     : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr), textEditor(nullptr) {
@@ -116,6 +119,31 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+        case WM_CLOSE:
+            {
+                bool canClose = true;
+                if (pThis->textEditor && pThis->textEditor->IsModified()) {
+                    int res = FileManager::ConfirmSaveChanges(hwnd);
+                    if (res == IDYES) {
+                        std::wstring text = pThis->textEditor->GetText();
+                        if (!pThis->currentFilePath.empty()) {
+                            if (!FileManager::SaveTextFileToPath(pThis->currentFilePath, text)) {
+                                return 0;
+                            }
+                        } else {
+                            std::wstring path;
+                            if (!FileManager::SaveTextFile(hwnd, text, path)) {
+                                return 0;
+                            }
+                            pThis->currentFilePath = path;
+                        }
+                        pThis->textEditor->ResetModified();
+                    } else if (res == IDCANCEL) {
+                        return 0;
+                    }
+                }
+            }
+            break;
         }
     }
 
@@ -147,6 +175,34 @@ void MainWindow::OnPaint() {
 void MainWindow::OnCommand(WPARAM wParam) {
     switch (LOWORD(wParam)) {
         
+    case IDM_FILE_OPEN:
+        if (textEditor) {
+            std::wstring text;
+            std::wstring path;
+            if (FileManager::OpenTextFile(hwndMain, text, path)) {
+                textEditor->SetText(text);
+                currentFilePath = path;
+                textEditor->ResetModified();
+            }
+        }
+        break;
+
+    case IDM_FILE_SAVE:
+        if (textEditor) {
+            std::wstring text = textEditor->GetText();
+            if (!currentFilePath.empty()) {
+                FileManager::SaveTextFileToPath(currentFilePath, text);
+                textEditor->ResetModified();
+            } else {
+                std::wstring path;
+                if (FileManager::SaveTextFile(hwndMain, text, path)) {
+                    currentFilePath = path;
+                    textEditor->ResetModified();
+                }
+            }
+        }
+        break;
+
     case IDM_FILE_EXIT:
         PostMessage(hwndMain, WM_CLOSE, 0, 0);
         break;

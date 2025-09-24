@@ -1,5 +1,6 @@
 #include "TextEditor.h"
 #include "ClipboardManager.h"
+#include "Resource.h"
 #include <tchar.h>
 #include <string>
 
@@ -22,7 +23,7 @@ bool TextEditor::Create() {
         ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN,
         0, 0, 0, 0,
         hwndParent,
-        (HMENU)1001,
+        (HMENU)IDC_MAIN_EDIT,
         hInstance,
         nullptr
     );
@@ -154,13 +155,22 @@ LRESULT CALLBACK TextEditor::EditProc(HWND hwnd, UINT message, WPARAM wParam, LP
                     case 'A':
                         pThis->SelectAll();
                         return 0;
+                    case 'O':
+                        if (pThis->hwndParent) {
+                            PostMessage(pThis->hwndParent, WM_COMMAND, IDM_FILE_OPEN, 0);
+                        }
+                        return 0;
+                    case 'S':
+                        if (pThis->hwndParent) {
+                            PostMessage(pThis->hwndParent, WM_COMMAND, IDM_FILE_SAVE, 0);
+                        }
+                        return 0;
                     }
                 }
             }
             break;
         
         case WM_PASTE:
-            // Позволяем стандартной обработке выполнить вставку один раз
             return CallWindowProc(pThis->originalEditProc, hwnd, message, wParam, lParam);
         case WM_COPY:
         case WM_CUT:
@@ -236,4 +246,19 @@ void TextEditor::SelectAll() {
     }
 
     SendMessage(hwndEdit, EM_SETSEL, 0, -1);
+}
+
+bool TextEditor::IsModified() const {
+    if (!hwndEdit) {
+        return false;
+    }
+    LRESULT modified = SendMessage(hwndEdit, EM_GETMODIFY, 0, 0);
+    return modified != 0;
+}
+
+void TextEditor::ResetModified() {
+    if (!hwndEdit) {
+        return;
+    }
+    SendMessage(hwndEdit, EM_SETMODIFY, FALSE, 0);
 }

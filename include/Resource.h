@@ -18,3 +18,5 @@
 
 #define SPRITE_SIZE 50
 #define SPRITE_SPEED 5
+
+#define IDC_MAIN_EDIT       11001
