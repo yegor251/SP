@@ -24,6 +24,10 @@ public:
     void Clear();
     void SetEditorFocus();
     void Resize();
+    void Cut();
+    void Copy();
+    void Paste();
+    void SelectAll();
     
     HWND GetHandle() const { return hwndEdit; }
     

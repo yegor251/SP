@@ -152,15 +152,27 @@ void MainWindow::OnCommand(WPARAM wParam) {
         break;
         
     case IDM_EDIT_CUT:
-        MessageBox(hwndMain, L"Cut function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
+        if (textEditor) {
+            textEditor->Cut();
+        }
         break;
         
     case IDM_EDIT_COPY:
-        MessageBox(hwndMain, L"Copy function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
+        if (textEditor) {
+            textEditor->Copy();
+        }
         break;
         
     case IDM_EDIT_PASTE:
-        MessageBox(hwndMain, L"Paste function not implemented", L"Information", MB_OK | MB_ICONINFORMATION);
+        if (textEditor) {
+            textEditor->Paste();
+        }
+        break;
+        
+    case IDM_EDIT_SELECT_ALL:
+        if (textEditor) {
+            textEditor->SelectAll();
+        }
         break;
         
         

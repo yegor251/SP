@@ -18,6 +18,8 @@ HMENU MenuManager::CreateMainMenu() {
     AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_CUT, L"Cut");
     AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_COPY, L"Copy");
     AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_PASTE, L"Paste");
+    AppendMenu(hEditMenu, MF_SEPARATOR, 0, nullptr);
+    AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_SELECT_ALL, L"Select All");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
     
     hHelpMenu = CreatePopupMenu();

@@ -1,4 +1,5 @@
 #include "TextEditor.h"
+#include "ClipboardManager.h"
 #include <tchar.h>
 #include <string>
 
@@ -143,10 +144,96 @@ LRESULT CALLBACK TextEditor::EditProc(HWND hwnd, UINT message, WPARAM wParam, LP
                 return 0;
             }
             break;
+            
+        case WM_KEYDOWN:
+            {
+                bool ctrlPressed = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+                
+                if (ctrlPressed) {
+                    switch (wParam) {
+                    case 'A':
+                        pThis->SelectAll();
+                        return 0;
+                    }
+                }
+            }
+            break;
+        
+        case WM_PASTE:
+            // Позволяем стандартной обработке выполнить вставку один раз
+            return CallWindowProc(pThis->originalEditProc, hwnd, message, wParam, lParam);
+        case WM_COPY:
+        case WM_CUT:
+            return CallWindowProc(pThis->originalEditProc, hwnd, message, wParam, lParam);
         }
         
         return CallWindowProc(pThis->originalEditProc, hwnd, message, wParam, lParam);
     }
     
     return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+void TextEditor::Cut() {
+    if (!hwndEdit) {
+        return;
+    }
+
+    int start, end;
+    SendMessage(hwndEdit, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+    
+    if (start != end) {
+        int textLength = GetWindowTextLength(hwndEdit);
+        if (textLength > 0) {
+            std::wstring text(textLength + 1, L'\0');
+            GetWindowText(hwndEdit, &text[0], textLength + 1);
+            text.resize(textLength);
+            
+            std::wstring selectedText = text.substr(start, end - start);
+            if (ClipboardManager::CopyToClipboard(selectedText)) {
+                SendMessage(hwndEdit, EM_REPLACESEL, TRUE, (LPARAM)L"");
+            }
+        }
+    }
+}
+
+void TextEditor::Copy() {
+    if (!hwndEdit) {
+        return;
+    }
+
+    int start, end;
+    SendMessage(hwndEdit, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+    
+    if (start != end) {
+        int textLength = GetWindowTextLength(hwndEdit);
+        if (textLength > 0) {
+            std::wstring text(textLength + 1, L'\0');
+            GetWindowText(hwndEdit, &text[0], textLength + 1);
+            text.resize(textLength);
+            
+            std::wstring selectedText = text.substr(start, end - start);
+            ClipboardManager::CopyToClipboard(selectedText);
+        }
+    }
+}
+
+void TextEditor::Paste() {
+    if (!hwndEdit) {
+        return;
+    }
+
+    if (ClipboardManager::IsClipboardAvailable()) {
+        std::wstring clipboardText = ClipboardManager::GetFromClipboard();
+        if (!clipboardText.empty()) {
+            SendMessage(hwndEdit, EM_REPLACESEL, TRUE, (LPARAM)clipboardText.c_str());
+        }
+    }
+}
+
+void TextEditor::SelectAll() {
+    if (!hwndEdit) {
+        return;
+    }
+
+    SendMessage(hwndEdit, EM_SETSEL, 0, -1);
 }
