@@ -8,19 +8,14 @@ private:
     BOOL bScreensaverActive;
     int spriteX;
     int spriteY;
-    int spriteDirectionX;
-    int spriteDirectionY;
 
 public:
     DarkScreen(HWND hwnd);
     ~DarkScreen();
     
-    void StartInactivityTimer();
-    void StopInactivityTimer();
     void StartScreensaver();
     void StopScreensaver();
-    void OnTimer(WPARAM wParam);
-    void OnUserActivity();
+    void OnKeyDown(WPARAM wParam);
     void DrawSprite(HDC hdc, int x, int y);
     void OnPaint(HDC hdc);
     

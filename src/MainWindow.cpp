@@ -151,9 +151,6 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 }
 
 void MainWindow::OnCreate() {
-    if (darkScreen) {
-        darkScreen->StartInactivityTimer();
-    }
 }
 
 void MainWindow::OnPaint() {
@@ -239,42 +236,38 @@ void MainWindow::OnCommand(WPARAM wParam) {
 }
 
 void MainWindow::OnMouseMove(int x, int y) {
-    if (x != lastMousePos.x || y != lastMousePos.y) {
-        lastMousePos.x = x;
-        lastMousePos.y = y;
-        
-        if (darkScreen) {
-            darkScreen->OnUserActivity();
-        }
-    }
+    lastMousePos.x = x;
+    lastMousePos.y = y;
 }
 
 void MainWindow::OnKeyDown(WPARAM wParam) {
     if (darkScreen) {
-        darkScreen->OnUserActivity();
+        if (GetKeyState(VK_CONTROL) & 0x8000) {
+            if (wParam == 'W') {
+                darkScreen->StartScreensaver();
+                return;
+            } else if (wParam == 'Q') {
+                darkScreen->StopScreensaver();
+                return;
+            }
+        }
+        
+        if (darkScreen->IsActive()) {
+            darkScreen->OnKeyDown(wParam);
+        }
     }
 }
 
 void MainWindow::OnLeftMouseClick(int x, int y) {
-    if (darkScreen) {
-        darkScreen->OnUserActivity();
-    }
-    
     if (textEditor && textEditor->IsVisible()) {
         textEditor->SetEditorFocus();
     }
 }
 
 void MainWindow::OnMouseClick() {
-    if (darkScreen) {
-        darkScreen->OnUserActivity();
-    }
 }
 
 void MainWindow::OnTimer(WPARAM wParam) {
-    if (darkScreen) {
-        darkScreen->OnTimer(wParam);
-    }
 }
 
 void MainWindow::OnSize() {

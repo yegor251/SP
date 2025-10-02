@@ -165,6 +165,23 @@ LRESULT CALLBACK TextEditor::EditProc(HWND hwnd, UINT message, WPARAM wParam, LP
                             PostMessage(pThis->hwndParent, WM_COMMAND, IDM_FILE_SAVE, 0);
                         }
                         return 0;
+                    case 'W':
+                        if (pThis->hwndParent) {
+                            SendMessage(pThis->hwndParent, WM_KEYDOWN, wParam, lParam);
+                        }
+                        return 0;
+                    case 'Q':
+                        if (pThis->hwndParent) {
+                            SendMessage(pThis->hwndParent, WM_KEYDOWN, wParam, lParam);
+                        }
+                        return 0;
+                    }
+                }
+                
+                if (wParam == 'W' || wParam == 'A' || wParam == 'S' || wParam == 'D') {
+                    if (pThis->hwndParent) {
+                        SendMessage(pThis->hwndParent, WM_KEYDOWN, wParam, lParam);
+                        return 0;
                     }
                 }
             }
