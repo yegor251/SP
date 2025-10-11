@@ -94,6 +94,12 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_SIZE:
             pThis->OnSize();
             return 0;
+        case WM_VSCROLL:
+            if (pThis->textEditor) {
+                pThis->textEditor->OnVScroll(wParam, lParam);
+                return 0;
+            }
+            break;
 
         case WM_MOUSEMOVE:
             pThis->OnMouseMove(LOWORD(lParam), HIWORD(lParam));
@@ -231,6 +237,15 @@ void MainWindow::OnCommand(WPARAM wParam) {
         
     case IDM_HELP_ABOUT:
         AboutDialog::ShowDialog(hwndMain);
+        break;
+    case IDM_FONT_DEFAULT:
+    case IDM_FONT_RASTER:
+    case IDM_FONT_VECTOR:
+        if (textEditor) {
+            textEditor->SetFontByMenuId(LOWORD(wParam));
+        }
+        break;
+    case WM_INITMENUPOPUP:
         break;
     }
 }

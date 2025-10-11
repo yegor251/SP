@@ -1,6 +1,6 @@
 #include "MenuManager.h"
 
-MenuManager::MenuManager() : hMainMenu(nullptr), hFileMenu(nullptr), hEditMenu(nullptr), hHelpMenu(nullptr) {
+MenuManager::MenuManager() : hMainMenu(nullptr), hFileMenu(nullptr), hEditMenu(nullptr), hHelpMenu(nullptr), hFontMenu(nullptr) {
 }
 
 MenuManager::~MenuManager() {
@@ -28,6 +28,12 @@ HMENU MenuManager::CreateMainMenu() {
     hHelpMenu = CreatePopupMenu();
     AppendMenu(hHelpMenu, MF_STRING, IDM_HELP_ABOUT, L"About");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hHelpMenu, L"Help");
+    
+    hFontMenu = CreatePopupMenu();
+    AppendMenu(hFontMenu, MF_STRING, IDM_FONT_DEFAULT, L"Consolas (Default)");
+    AppendMenu(hFontMenu, MF_STRING, IDM_FONT_RASTER, L"Terminal (Raster)");
+    AppendMenu(hFontMenu, MF_STRING, IDM_FONT_VECTOR, L"Arial (Vector)");
+    AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hFontMenu, L"Font");
     
     return hMainMenu;
 }

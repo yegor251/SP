@@ -10,6 +10,10 @@
 #define IDM_EDIT_SHOW_EDITOR 2005
 #define IDM_HELP_ABOUT     3001
 
+#define IDM_FONT_DEFAULT   3101
+#define IDM_FONT_RASTER    3102
+#define IDM_FONT_VECTOR    3103
+
 #define IDD_ABOUT          4001
 #define IDC_STATIC_ABOUT   4002
 

@@ -8,6 +8,7 @@ private:
     HMENU hFileMenu;
     HMENU hEditMenu;
     HMENU hHelpMenu;
+    HMENU hFontMenu;
 
 public:
     MenuManager();
