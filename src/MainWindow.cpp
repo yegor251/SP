@@ -100,6 +100,13 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                 return 0;
             }
             break;
+            
+        case WM_MOUSEWHEEL:
+            if (pThis->textEditor) {
+                pThis->textEditor->OnMouseWheel(wParam, lParam);
+                return 0;
+            }
+            break;
 
         case WM_MOUSEMOVE:
             pThis->OnMouseMove(LOWORD(lParam), HIWORD(lParam));

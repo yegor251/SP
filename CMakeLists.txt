@@ -13,6 +13,10 @@ set(SOURCES
     src/MenuManager.cpp
     src/DarkScreen.cpp
     src/TextEditor.cpp
+    src/CellManager.cpp
+    src/FontManager.cpp
+    src/ScrollManager.cpp
+    src/ClipboardHandler.cpp
     src/ClipboardManager.cpp
     src/FileManager.cpp
 )
@@ -24,6 +28,10 @@ set(HEADERS
     include/Resource.h
     include/DarkScreen.h
     include/TextEditor.h
+    include/CellManager.h
+    include/FontManager.h
+    include/ScrollManager.h
+    include/ClipboardHandler.h
     include/ClipboardManager.h
     include/FileManager.h
 )

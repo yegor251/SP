@@ -31,7 +31,7 @@ HMENU MenuManager::CreateMainMenu() {
     
     hFontMenu = CreatePopupMenu();
     AppendMenu(hFontMenu, MF_STRING, IDM_FONT_DEFAULT, L"Consolas (Default)");
-    AppendMenu(hFontMenu, MF_STRING, IDM_FONT_RASTER, L"Terminal (Raster)");
+    AppendMenu(hFontMenu, MF_STRING, IDM_FONT_RASTER, L"Courier New (Raster)");
     AppendMenu(hFontMenu, MF_STRING, IDM_FONT_VECTOR, L"Arial (Vector)");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hFontMenu, L"Font");
     
