@@ -1,4 +1,5 @@
 #include "CellManager.h"
+#include "TextEditor.h"
 #include "Resource.h"
 #include <tchar.h>
 #include <string>
@@ -7,7 +8,7 @@
 
 CellManager::CellManager(HWND parent, HINSTANCE hInst) 
     : hwndParent(parent), hInstance(hInst), hMsftedit(nullptr), scrollOffset(0),
-      contentChangedCallback(nullptr), contentChangedUserData(nullptr) {
+      contentChangedCallback(nullptr), contentChangedUserData(nullptr), textEditor(nullptr) {
     for (int r = 0; r < kRows; ++r) {
         for (int c = 0; c < kCols; ++c) {
             cellEdits[r][c] = nullptr;
@@ -134,8 +135,9 @@ bool CellManager::Create() {
             cf.cbSize = sizeof(cf);
             cf.dwMask = CFM_FACE | CFM_SIZE | CFM_WEIGHT;
             cf.yHeight = 16 * 20;
+            cf.wWeight = FW_NORMAL;
             wcscpy_s(cf.szFaceName, LF_FACESIZE, L"Consolas");
-            SendMessage(hwnd, EM_SETCHARFORMAT, (WPARAM)SCF_ALL, (LPARAM)&cf);
+            SendMessage(hwnd, EM_SETCHARFORMAT, (WPARAM)SCF_DEFAULT, (LPARAM)&cf);
             cellEdits[r][c] = hwnd;
         }
     }
@@ -442,6 +444,10 @@ void CellManager::SetContentChangedCallback(ContentChangedCallback callback, voi
     contentChangedUserData = userData;
 }
 
+void CellManager::SetTextEditor(TextEditor* editor) {
+    textEditor = editor;
+}
+
 WNDPROC CellManager::GetOriginalProc(HWND hwnd) const {
     return (WNDPROC)(ULONG_PTR)GetProp(hwnd, L"CM_ORIGPROC");
 }
@@ -458,6 +464,14 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
     }
     if (pThis && orig && pThis->IsOurCell(hwnd)) {
         switch (message) {
+        case WM_SETFOCUS:
+            if (pThis->textEditor) {
+                pThis->textEditor->ApplySelectedFontToCell(hwnd);
+                // Устанавливаем курсор в конец текста без выделения
+                int textLength = GetWindowTextLength(hwnd);
+                SendMessage(hwnd, EM_SETSEL, textLength, textLength);
+            }
+            break;
         case WM_CHAR:
             if (wParam == VK_ESCAPE) {
                 pThis->Hide();

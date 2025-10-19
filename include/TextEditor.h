@@ -11,6 +11,7 @@ private:
     HWND hwndParent;
     HINSTANCE hInstance;
     bool isVisible;
+    UINT selectedFontId;
     
     CellManager* cellManager;
     FontManager* fontManager;
@@ -47,4 +48,6 @@ public:
     void ApplyCurrentFontToFocusedSelection();
     void ApplyFontToAll(const wchar_t* faceName, int heightLogical);
     void SetFontPreset(FontManager::FontPreset preset);
+    void ApplySelectedFontToCell(HWND cellHwnd);
+    UINT GetSelectedFontId() const { return selectedFontId; }
 };

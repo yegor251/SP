@@ -7,7 +7,7 @@
 #include <RichEdit.h>
 
 TextEditor::TextEditor(HWND parent, HINSTANCE hInst) 
-    : hwndParent(parent), hInstance(hInst), isVisible(false), 
+    : hwndParent(parent), hInstance(hInst), isVisible(false), selectedFontId(IDM_FONT_DEFAULT),
       cellManager(nullptr), fontManager(nullptr), scrollManager(nullptr), clipboardHandler(nullptr) {
 }
 
@@ -39,6 +39,7 @@ bool TextEditor::Create() {
     if (!cellManager->Create()) {
         return false;
     }
+    cellManager->SetTextEditor(this);
 
     fontManager = new FontManager();
     if (!fontManager->CreateDefaultFont()) {
@@ -66,6 +67,7 @@ bool TextEditor::Create() {
 }
 
 void TextEditor::SetFontByMenuId(UINT id) {
+    selectedFontId = id;
     if (fontManager) {
         fontManager->SetFontByMenuId(id);
     }
@@ -99,6 +101,31 @@ void TextEditor::SetFontPreset(FontManager::FontPreset preset) {
             scrollManager->UpdateScrollBarSize();
         }
     }
+}
+
+void TextEditor::ApplySelectedFontToCell(HWND cellHwnd) {
+    if (!cellHwnd || !fontManager) {
+        return;
+    }
+    
+    const wchar_t* faceName = L"Consolas";
+    if (selectedFontId == IDM_FONT_RASTER) {
+        faceName = L"Courier New";
+    } else if (selectedFontId == IDM_FONT_VECTOR) {
+        faceName = L"Arial";
+    }
+    
+    CHARFORMAT2 cf = {};
+    cf.cbSize = sizeof(cf);
+    cf.dwMask = CFM_FACE | CFM_SIZE | CFM_WEIGHT;
+    cf.yHeight = 16 * 20;
+    cf.wWeight = FW_NORMAL;
+    wcscpy_s(cf.szFaceName, LF_FACESIZE, faceName);
+
+    int textLength = GetWindowTextLength(cellHwnd);
+    SendMessage(cellHwnd, EM_SETSEL, textLength, textLength);
+    
+    SendMessage(cellHwnd, EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cf);
 }
 
 void TextEditor::Show() {

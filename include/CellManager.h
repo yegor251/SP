@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <string>
 
+class TextEditor;
+
 class CellManager {
 private:
     static const int kRows = 10;
@@ -18,6 +20,8 @@ private:
     typedef void (*ContentChangedCallback)(void* userData);
     ContentChangedCallback contentChangedCallback;
     void* contentChangedUserData;
+    
+    TextEditor* textEditor;
 
 public:
     CellManager(HWND parent, HINSTANCE hInst);
@@ -47,6 +51,7 @@ public:
     void RelayoutGridWithScrollOffset(int scrollOffset);
     int GetContentHeight() const;
     void SetContentChangedCallback(ContentChangedCallback callback, void* userData);
+    void SetTextEditor(TextEditor* editor);
 
     void SetRowHeight(int row, int height);
     int GetRowHeight(int row) const;
