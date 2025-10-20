@@ -36,6 +36,9 @@ void ClipboardHandler::Paste() {
         std::wstring clipboardText = ClipboardManager::GetFromClipboard();
         if (!clipboardText.empty()) {
             SendMessage(target, EM_REPLACESEL, TRUE, (LPARAM)clipboardText.c_str());
+            if (cellManager) {
+                cellManager->SetCharFormatForCellByHandle(target, L"Consolas", 16);
+            }
         }
     }
 }

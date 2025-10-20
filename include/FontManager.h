@@ -18,6 +18,8 @@ public:
     void SetFontByMenuId(UINT id);
     void ApplyCurrentFontToFocusedSelection();
     void ApplyFontToAll(const wchar_t* faceName, int heightLogical);
+    void ApplyConsolasToAllText(HWND hwnd);
+    void ApplyConsolasToNewText(HWND hwnd);
     enum class FontPreset { DefaultConsolas, RasterCourierNew, VectorArial };
     void SetFontPreset(FontPreset preset);
     HFONT GetFont() const { return hFont; }

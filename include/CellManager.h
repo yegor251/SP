@@ -47,6 +47,8 @@ public:
     
     void SetFont(HFONT font);
     void SetCharFormat(const wchar_t* faceName, int height);
+    void SetCharFormatForCell(int row, int col, const wchar_t* faceName, int height);
+    void SetCharFormatForCellByHandle(HWND hwnd, const wchar_t* faceName, int height);
     void RelayoutGrid();
     void RelayoutGridWithScrollOffset(int scrollOffset);
     int GetContentHeight() const;

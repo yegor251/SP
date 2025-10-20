@@ -68,6 +68,38 @@ void FontManager::ApplyCurrentFontToFocusedSelection() {
     SendMessage(target, EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cf);
 }
 
+void FontManager::ApplyConsolasToAllText(HWND hwnd) {
+    if (!hwnd) {
+        return;
+    }
+    
+    CHARFORMAT2 cf = {};
+    cf.cbSize = sizeof(cf);
+    cf.dwMask = CFM_FACE | CFM_SIZE | CFM_WEIGHT;
+    cf.yHeight = 16 * 20;
+    cf.wWeight = FW_NORMAL;
+    wcscpy_s(cf.szFaceName, LF_FACESIZE, L"Consolas");
+    
+    SendMessage(hwnd, EM_SETSEL, 0, -1);
+    SendMessage(hwnd, EM_SETCHARFORMAT, (WPARAM)SCF_ALL, (LPARAM)&cf);
+    SendMessage(hwnd, EM_SETSEL, -1, -1);
+}
+
+void FontManager::ApplyConsolasToNewText(HWND hwnd) {
+    if (!hwnd) {
+        return;
+    }
+    
+    CHARFORMAT2 cf = {};
+    cf.cbSize = sizeof(cf);
+    cf.dwMask = CFM_FACE | CFM_SIZE | CFM_WEIGHT;
+    cf.yHeight = 16 * 20;
+    cf.wWeight = FW_NORMAL;
+    wcscpy_s(cf.szFaceName, LF_FACESIZE, L"Consolas");
+    
+    SendMessage(hwnd, EM_SETCHARFORMAT, (WPARAM)SCF_DEFAULT, (LPARAM)&cf);
+}
+
 void FontManager::ApplyFontToAll(const wchar_t* faceName, int heightLogical) {
     if (!faceName) {
         return;
