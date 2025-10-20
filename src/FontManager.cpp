@@ -29,7 +29,7 @@ void FontManager::DestroyFont() {
 
 void FontManager::SetFontByMenuId(UINT id) {
     LOGFONT lf = {};
-    lf.lfHeight = 14;
+    lf.lfHeight = 16;
     lf.lfWeight = FW_NORMAL;
     wcscpy_s(lf.lfFaceName, LF_FACESIZE, L"Consolas");
     if (id == IDM_FONT_RASTER) {

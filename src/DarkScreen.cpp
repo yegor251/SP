@@ -1,7 +1,8 @@
 #include "DarkScreen.h"
+#include "TextEditor.h"
 
-DarkScreen::DarkScreen(HWND hwnd) 
-    : hwndMain(hwnd), bScreensaverActive(FALSE) {
+DarkScreen::DarkScreen(HWND hwnd, TextEditor* editor) 
+    : hwndMain(hwnd), bScreensaverActive(FALSE), textEditor(editor) {
     RECT rect;
     if (GetClientRect(hwndMain, &rect)) {
         spriteX = rect.right / 2;
@@ -35,6 +36,10 @@ void DarkScreen::StartScreensaver() {
             }
         }
 
+        if (textEditor && textEditor->GetCellManager()) {
+            textEditor->GetCellManager()->Hide();
+        }
+
         if (!InvalidateRect(hwndMain, nullptr, TRUE)) {
         }
     }
@@ -51,6 +56,10 @@ void DarkScreen::StopScreensaver() {
         if (hwndEdit) {
             if (!ShowWindow(hwndEdit, SW_SHOW)) {
             }
+        }
+        
+        if (textEditor && textEditor->GetCellManager()) {
+            textEditor->GetCellManager()->Show();
         }
         
         if (!InvalidateRect(hwndMain, nullptr, TRUE)) {

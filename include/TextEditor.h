@@ -50,4 +50,6 @@ public:
     void SetFontPreset(FontManager::FontPreset preset);
     void ApplySelectedFontToCell(HWND cellHwnd);
     UINT GetSelectedFontId() const { return selectedFontId; }
+    
+    CellManager* GetCellManager() const { return cellManager; }
 };

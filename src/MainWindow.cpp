@@ -48,12 +48,12 @@ bool MainWindow::Create() {
     );
 
     if (hwndMain) {
-        darkScreen = new DarkScreen(hwndMain);
         textEditor = new TextEditor(hwndMain, hInstance);
         if (textEditor) {
             textEditor->Create();
             textEditor->Show();
         }
+        darkScreen = new DarkScreen(hwndMain, textEditor);
     }
 
     return hwndMain != nullptr;
