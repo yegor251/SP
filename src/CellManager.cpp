@@ -212,7 +212,6 @@ void CellManager::SetText(const std::wstring& text) {
             std::wstring cellText = text.substr(start, pos - start);
             if (cellEdits[row][col]) {
                 SetWindowText(cellEdits[row][col], cellText.c_str());
-                SetCharFormatForCell(row, col, L"Consolas", 16);
             }
             if (pos < text.size() && text[pos] == L'\t') {
                 ++col;
@@ -283,7 +282,6 @@ void CellManager::Clear() {
             if (cellEdits[r][c]) {
                 SetWindowText(cellEdits[r][c], L"");
                 SendMessage(cellEdits[r][c], EM_SETMODIFY, FALSE, 0);
-                SetCharFormatForCell(r, c, L"Consolas", 16);
             }
         }
     }
@@ -519,13 +517,6 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
                         }
                     }
                 }
-            }
-            // Вызываем оригинальную процедуру для обработки символа
-            if (orig) {
-                LRESULT result = CallWindowProc(orig, hwnd, message, wParam, lParam);
-                // Применяем шрифт Consolas к введенному тексту
-                pThis->SetCharFormatForCellByHandle(hwnd, L"Consolas", 16);
-                return result;
             }
             break;
         case WM_KEYUP:

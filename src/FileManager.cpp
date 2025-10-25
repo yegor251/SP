@@ -56,7 +56,8 @@ namespace FileManager {
 
         // Проверка BOM и преобразование
         if (bytesRead >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF) {
-            // UTF-8 с BOM
+            // UTF-8 с BOM (Byte Order Mark: EF BB BF)
+            // Пропускаем первые 3 байта BOM и конвертируем UTF-8 в UTF-16
             int wlen = MultiByteToWideChar(CP_UTF8, 0, 
                 reinterpret_cast<LPCCH>(bytes.data() + 3), bytesRead - 3, nullptr, 0);
             if (wlen > 0) {
@@ -67,30 +68,32 @@ namespace FileManager {
             }
         }
         else if (bytesRead >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE) {
-            // UTF-16 LE с BOM
+            // UTF-16 LE (Little Endian) с BOM (FF FE)
+            // Пропускаем BOM и копируем UTF-16 данные напрямую
             size_t wcharCount = (bytesRead - 2) / sizeof(WCHAR);
             textW.assign(reinterpret_cast<const wchar_t*>(bytes.data() + 2), wcharCount);
         }
         else if (bytesRead >= 2 && bytes[1] == 0x00 && bytes[0] != 0x00) {
-            // Вероятно UTF-16 LE без BOM (английские символы)
+            // UTF-16 LE без BOM (первый байт не 0, второй байт 0)
+            // Копируем UTF-16 данные напрямую
             size_t wcharCount = bytesRead / sizeof(WCHAR);
             textW.assign(reinterpret_cast<const wchar_t*>(bytes.data()), wcharCount);
         }
         else {
-            // Пробуем как ANSI или UTF-8 без BOM
-            // Сначала пробуем UTF-8
+            // Попытка определить кодировку без BOM
+            // Сначала пробуем UTF-8 без BOM
             int wlen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, 
                 reinterpret_cast<LPCCH>(bytes.data()), bytesRead, nullptr, 0);
             
             if (wlen > 0 && GetLastError() != ERROR_NO_UNICODE_TRANSLATION) {
-                // UTF-8 без BOM
+                // UTF-8 без BOM - успешно определили
                 textW.resize(wlen);
                 MultiByteToWideChar(CP_UTF8, 0, 
                     reinterpret_cast<LPCCH>(bytes.data()), bytesRead, 
                     &textW[0], wlen);
             }
             else {
-                // ANSI (текущая кодовая страница системы)
+                // Если UTF-8 не подошел, пробуем системную кодировку (ANSI/CP1251)
                 wlen = MultiByteToWideChar(CP_ACP, 0, 
                     reinterpret_cast<LPCCH>(bytes.data()), bytesRead, nullptr, 0);
                 if (wlen > 0) {
@@ -102,12 +105,10 @@ namespace FileManager {
             }
         }
 
-        // Удаляем BOM если он еще остался
         if (!textW.empty() && textW[0] == 0xFEFF) {
             textW.erase(textW.begin());
         }
 
-        // Обработка переводов строк и форматирование (ваш существующий код)
         std::wstring normalized;
         normalized.reserve(textW.size());
         for (size_t i = 0; i < textW.size(); ++i) {
@@ -180,7 +181,6 @@ namespace FileManager {
             return false;
         }
     
-        // Обработка табов -> двойные переводы строк
         std::wstring toWrite = text;
         size_t pos = 0;
         while ((pos = toWrite.find(L"\t", pos)) != std::wstring::npos) {
@@ -190,17 +190,15 @@ namespace FileManager {
     
         BOOL success = FALSE;
         
-        // Определяем, нужна ли конвертация в UTF-8
         bool needsConversion = false;
         for (wchar_t c : toWrite) {
-            if (c > 0x7F) { // Есть не-ASCII символы
+            if (c > 0x7F) {
                 needsConversion = true;
                 break;
             }
         }
     
         if (needsConversion) {
-            // Сохраняем в UTF-8 с BOM (лучшая совместимость)
             const BYTE utf8_bom[] = { 0xEF, 0xBB, 0xBF };
             DWORD written = 0;
             WriteFile(hOut, utf8_bom, sizeof(utf8_bom), &written, nullptr);
@@ -211,10 +209,9 @@ namespace FileManager {
                 WideCharToMultiByte(CP_UTF8, 0, toWrite.c_str(), -1, utf8_buffer.data(), utf8_len, nullptr, nullptr);
                 
                 DWORD bytesWritten = 0;
-                success = WriteFile(hOut, utf8_buffer.data(), utf8_len - 1, &bytesWritten, nullptr); // -1 чтобы исключить null terminator
+                success = WriteFile(hOut, utf8_buffer.data(), utf8_len - 1, &bytesWritten, nullptr);
             }
         } else {
-            // Только ASCII символы - сохраняем как ANSI (компактнее)
             int ansi_len = WideCharToMultiByte(CP_ACP, 0, toWrite.c_str(), -1, nullptr, 0, nullptr, nullptr);
             if (ansi_len > 0) {
                 std::vector<char> ansi_buffer(ansi_len);
