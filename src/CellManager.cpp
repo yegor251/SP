@@ -350,6 +350,9 @@ bool CellManager::ReplaceWithDashesForAllCells(const std::wstring& targetW) {
             if (!SetWindowText(cellEdits[r][c], replacedW.c_str())) {
                 return false;
             }
+            if (textEditor) {
+                textEditor->ApplySelectedFontToCell(cellEdits[r][c]);
+            }
         }
     }
     return true;

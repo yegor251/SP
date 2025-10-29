@@ -122,9 +122,7 @@ void TextEditor::ApplySelectedFontToCell(HWND cellHwnd) {
     cf.wWeight = FW_NORMAL;
     wcscpy_s(cf.szFaceName, LF_FACESIZE, faceName);
 
-    int textLength = GetWindowTextLength(cellHwnd);
-    SendMessage(cellHwnd, EM_SETSEL, textLength, textLength);
-    
+    SendMessage(cellHwnd, EM_SETSEL, 0, -1);
     SendMessage(cellHwnd, EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cf);
 }
 
