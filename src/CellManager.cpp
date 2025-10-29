@@ -1,4 +1,8 @@
 #include "CellManager.h"
+#include <vector>
+#include <string>
+#include <memory>
+#include "../third_party/SimpleLib/include/SimpleLib.h"
 #include "TextEditor.h"
 #include "Resource.h"
 #include <tchar.h>
@@ -274,6 +278,81 @@ std::wstring CellManager::GetText() const {
         }
     }
     return out;
+}
+
+static bool Utf16ToUtf8(const std::wstring& w, std::string& out) {
+    out.clear();
+    if (w.empty()) {
+        return true;
+    }
+    int needed = WideCharToMultiByte(CP_UTF8, 0, w.c_str(), (int)w.size(), nullptr, 0, nullptr, nullptr);
+    if (needed <= 0) {
+        return false;
+    }
+    std::string buf;
+    buf.resize(static_cast<size_t>(needed));
+    int written = WideCharToMultiByte(CP_UTF8, 0, w.c_str(), (int)w.size(), buf.data(), needed, nullptr, nullptr);
+    if (written <= 0) {
+        return false;
+    }
+    out.assign(buf.data(), static_cast<size_t>(written));
+    return true;
+}
+
+static bool Utf8ToUtf16(const std::string& s, std::wstring& out) {
+    out.clear();
+    if (s.empty()) {
+        return true;
+    }
+    int needed = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), nullptr, 0);
+    if (needed <= 0) {
+        return false;
+    }
+    std::wstring buf;
+    buf.resize(static_cast<size_t>(needed));
+    int written = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), buf.data(), needed);
+    if (written <= 0) {
+        return false;
+    }
+    out.assign(buf.data(), static_cast<size_t>(written));
+    return true;
+}
+
+bool CellManager::ReplaceWithDashesForAllCells(const std::wstring& targetW) {
+    std::string target8;
+    if (!Utf16ToUtf8(targetW, target8)) {
+        return false;
+    }
+    for (int r = 0; r < kRows; ++r) {
+        for (int c = 0; c < kCols; ++c) {
+            if (!cellEdits[r][c]) {
+                continue;
+            }
+            int len = GetWindowTextLength(cellEdits[r][c]);
+            if (len < 0) len = 0;
+            std::wstring wcell(static_cast<size_t>(len) + 1, L'\0');
+            if (len > 0) {
+                int copied = GetWindowText(cellEdits[r][c], &wcell[0], len + 1);
+                if (copied < 0) copied = 0;
+                wcell.resize(static_cast<size_t>(copied));
+            } else {
+                wcell.clear();
+            }
+            std::string cell8;
+            if (!Utf16ToUtf8(wcell, cell8)) {
+                return false;
+            }
+            std::string replaced = SimpleLib::replaceWithDashes(cell8, target8);
+            std::wstring replacedW;
+            if (!Utf8ToUtf16(replaced, replacedW)) {
+                return false;
+            }
+            if (!SetWindowText(cellEdits[r][c], replacedW.c_str())) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void CellManager::Clear() {

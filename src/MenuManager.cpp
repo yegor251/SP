@@ -23,6 +23,8 @@ HMENU MenuManager::CreateMainMenu() {
     AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_PASTE, L"Paste");
     AppendMenu(hEditMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_SELECT_ALL, L"Select All");
+    AppendMenu(hEditMenu, MF_SEPARATOR, 0, nullptr);
+    AppendMenu(hEditMenu, MF_STRING, IDM_EDIT_REPLACE_DASHES, L"Replace with dashes...");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
     
     hHelpMenu = CreatePopupMenu();

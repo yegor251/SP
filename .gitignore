@@ -44,10 +44,11 @@ CTestTestfile.cmake
 *.obj
 *.lib
 *.dll
+!third_party/SimpleLib/lib/SimpleLib.lib
 *.exe
 
 .vscode/
 *.code-workspace
-
+.DS_Store
 Thumbs.db
 desktop.ini

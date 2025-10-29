@@ -19,6 +19,7 @@ set(SOURCES
     src/ClipboardHandler.cpp
     src/ClipboardManager.cpp
     src/FileManager.cpp
+    src/ReplaceDialog.cpp
 )
 
 set(HEADERS
@@ -34,10 +35,17 @@ set(HEADERS
     include/ClipboardHandler.h
     include/ClipboardManager.h
     include/FileManager.h
+    include/ReplaceDialog.h
 )
 
 add_executable(BasicWinAPI WIN32 ${SOURCES} ${HEADERS})
 
-target_include_directories(BasicWinAPI PRIVATE include)
+target_include_directories(BasicWinAPI PRIVATE include ${CMAKE_SOURCE_DIR}/third_party/SimpleLib/include)
 
-target_link_libraries(BasicWinAPI user32 gdi32 comctl32)
+target_link_libraries(BasicWinAPI user32 gdi32 comctl32 ${CMAKE_SOURCE_DIR}/third_party/SimpleLib/lib/SimpleLib.lib)
+
+if(MSVC)
+    # Совместимость с SimpleLib, собранной в Release (/MD, iterator debug level 0)
+    target_compile_definitions(BasicWinAPI PRIVATE $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=0>)
+    target_compile_options(BasicWinAPI PRIVATE $<$<CONFIG:Debug>:/MD>)
+endif()

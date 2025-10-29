@@ -3,6 +3,7 @@
 #include <commdlg.h>
 #include <string>
 #include "FileManager.h"
+#include "ReplaceDialog.h"
 
 MainWindow::MainWindow(HINSTANCE hInst) 
     : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr), textEditor(nullptr) {
@@ -238,6 +239,16 @@ void MainWindow::OnCommand(WPARAM wParam) {
     case IDM_EDIT_SELECT_ALL:
         if (textEditor) {
             textEditor->SelectAll();
+        }
+        break;
+
+    case IDM_EDIT_REPLACE_DASHES:
+        if (textEditor && textEditor->GetCellManager()) {
+            ReplaceDialog::Show(hwndMain, [this](const std::wstring& target){
+                if (this->textEditor && this->textEditor->GetCellManager()) {
+                    this->textEditor->GetCellManager()->ReplaceWithDashesForAllCells(target);
+                }
+            });
         }
         break;
         

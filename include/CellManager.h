@@ -65,4 +65,7 @@ public:
 private:
     WNDPROC GetOriginalProc(HWND hwnd) const;
     bool SetOriginalProc(HWND hwnd, WNDPROC proc);
+
+public:
+    bool ReplaceWithDashesForAllCells(const std::wstring& targetW);
 };
