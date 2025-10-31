@@ -15,6 +15,7 @@ private:
     TextEditor* textEditor;
     POINT lastMousePos;
     std::wstring currentFilePath;
+    class DllFunctionManager* dllManager;
     
 public:
     MainWindow(HINSTANCE hInst);

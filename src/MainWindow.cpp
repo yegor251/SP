@@ -4,9 +4,11 @@
 #include <string>
 #include "FileManager.h"
 #include "ReplaceDialog.h"
+#include "DllDialog.h"
+#include "DllFunctionManager.h"
 
 MainWindow::MainWindow(HINSTANCE hInst) 
-    : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr), textEditor(nullptr) {
+    : hwndMain(nullptr), hInstance(hInst), darkScreen(nullptr), textEditor(nullptr), dllManager(nullptr) {
     lastMousePos.x = 0;
     lastMousePos.y = 0;
 }
@@ -14,6 +16,7 @@ MainWindow::MainWindow(HINSTANCE hInst)
 MainWindow::~MainWindow() {
     delete darkScreen;
     delete textEditor;
+    if (dllManager) delete dllManager;
 }
 
 bool MainWindow::Create() {
@@ -55,6 +58,7 @@ bool MainWindow::Create() {
             textEditor->Show();
         }
         darkScreen = new DarkScreen(hwndMain, textEditor);
+        dllManager = new DllFunctionManager();
     }
 
     return hwndMain != nullptr;
@@ -249,6 +253,32 @@ void MainWindow::OnCommand(WPARAM wParam) {
                     this->textEditor->GetCellManager()->ReplaceWithDashesForAllCells(target);
                 }
             });
+        }
+        break;
+        
+    case IDM_DLL_MENU:
+        if (dllManager) {
+            auto runDialog = [this]() {
+                DllDialog::Show(hwndMain, *dllManager,
+                    [this](int idx) {
+                        if (textEditor && textEditor->GetCellManager()) {
+                            const auto* item = dllManager->GetItem(idx);
+                            if (item && item->proc) {
+                                std::wstring input = textEditor->GetCellManager()->GetText();
+                                wchar_t buf[65536] = { 0 };
+                                item->proc(input.c_str(), buf, 65536);
+                                std::wstring out = buf;
+                                textEditor->GetCellManager()->SetText(out);
+                            }
+                        }
+                    },
+                    [this](const std::wstring& path) {
+                        if (dllManager->AddLibrary(path)) {}
+                        // после добавления откроем снова диалог (рекурсивно, чтобы UI сразу обновился)
+                        PostMessage(hwndMain, WM_COMMAND, IDM_DLL_MENU, 0);
+                    });
+            };
+            runDialog();
         }
         break;
         

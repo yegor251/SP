@@ -9,6 +9,7 @@ private:
     HMENU hEditMenu;
     HMENU hHelpMenu;
     HMENU hFontMenu;
+    HMENU hDllMenu;
 
 public:
     MenuManager();
@@ -16,4 +17,5 @@ public:
     
     HMENU CreateMainMenu();
     void CleanupMenu();
+    HMENU GetDllMenu() const { return hDllMenu; }
 };

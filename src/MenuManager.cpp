@@ -36,6 +36,10 @@ HMENU MenuManager::CreateMainMenu() {
     AppendMenu(hFontMenu, MF_STRING, IDM_FONT_RASTER, L"Courier New (Raster)");
     AppendMenu(hFontMenu, MF_STRING, IDM_FONT_VECTOR, L"Arial (Vector)");
     AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hFontMenu, L"Font");
+
+    hDllMenu = CreatePopupMenu();
+    AppendMenu(hDllMenu, MF_STRING, IDM_DLL_MENU, L"DLL manager...");
+    AppendMenu(hMainMenu, MF_POPUP, (UINT_PTR)hDllMenu, L"DLL");
     
     return hMainMenu;
 }
