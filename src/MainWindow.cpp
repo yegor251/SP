@@ -269,12 +269,12 @@ void MainWindow::OnCommand(WPARAM wParam) {
                                 item->proc(input.c_str(), buf, 65536);
                                 std::wstring out = buf;
                                 textEditor->GetCellManager()->SetText(out);
+                                textEditor->GetCellManager()->ApplySelectedFontToAllCells();
                             }
                         }
                     },
                     [this](const std::wstring& path) {
                         if (dllManager->AddLibrary(path)) {}
-                        // после добавления откроем снова диалог (рекурсивно, чтобы UI сразу обновился)
                         PostMessage(hwndMain, WM_COMMAND, IDM_DLL_MENU, 0);
                     });
             };

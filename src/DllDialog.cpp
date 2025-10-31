@@ -38,7 +38,6 @@ static LRESULT CALLBACK DllDlgWndProc(HWND hwnd, UINT message, WPARAM wParam, LP
     case WM_COMMAND: {
         int id = LOWORD(wParam);
         if (id >= 1000 && id < 1000 + (int)g_dllButtons.size()) {
-            // При нажатии на библиотеку: вызов обработчика (передают ошибки наружу)
             bool ok = true;
             try {
                 if (g_onExecute) g_onExecute(id - 1000);
@@ -52,7 +51,7 @@ static LRESULT CALLBACK DllDlgWndProc(HWND hwnd, UINT message, WPARAM wParam, LP
             DestroyWindow(hwnd);
             return 0;
         }
-        if (id == 9000) { // Add DLL
+        if (id == 9000) {
             if (g_onAddDll) {
                 OPENFILENAME ofn = { sizeof(ofn) };
                 wchar_t szFile[MAX_PATH] = L"";
@@ -69,12 +68,10 @@ static LRESULT CALLBACK DllDlgWndProc(HWND hwnd, UINT message, WPARAM wParam, LP
                     } else {
                         ShowError(hwnd, L"Failed to load DLL (already loaded, or error)");
                     }
-                    // после успешного добавления пересоздать окно
                     if (result) {
                         DestroyWindow(hwnd);
                         return 0;
                     }
-                    // иначе не закрываем окно
                     return 0;
                 }
             }
@@ -137,7 +134,5 @@ void DllDialog::Show(HWND hwndParent, DllFunctionManager& manager, ExecuteCallba
         }
         EnableWindow(hwndParent, TRUE);
         SetForegroundWindow(hwndParent);
-        // если г_hwndDialog стало nullptr — всё ок;
-        // если hwndDialog уничтожен после успешной загрузки — пересоздаём выводом окна (в MainWindow тоже можно вызвать повторно Show, если хочется живое обновление)
     }
 }

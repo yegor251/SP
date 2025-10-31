@@ -5,7 +5,6 @@
 #include <memory>
 #include <functional>
 
-// C-style экспорт: void dll_entry(const wchar_t* input, wchar_t* outbuf, size_t outsize)
 typedef void(__cdecl* DllProcType)(const wchar_t*, wchar_t*, size_t);
 
 struct DllFunctionItem {

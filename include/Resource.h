@@ -18,7 +18,7 @@
 #define IDD_ABOUT          4001
 #define IDC_STATIC_ABOUT   4002
 #define IDM_DLL_MENU         4003
-#define IDM_DLL_BASE         4100 // Кнопки Dynamic
+#define IDM_DLL_BASE         4100
 #define IDM_DLL_ADD          4004
 #define IDD_DLL_MANAGER      4201
 

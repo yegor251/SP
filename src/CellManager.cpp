@@ -192,7 +192,6 @@ void CellManager::SetText(const std::wstring& text) {
         return;
     }
     
-    // Сбрасываем все высоты к начальным
     for (int r = 0; r < kRows; ++r) {
         rowHeights[r] = kDefaultRowHeight;
     }
@@ -202,7 +201,6 @@ void CellManager::SetText(const std::wstring& text) {
     size_t pos = 0;
     size_t start = 0;
     
-    // Очищаем все ячейки
     for (int r = 0; r < kRows; ++r) {
         for (int c = 0; c < kCols; ++c) {
             if (cellEdits[r][c]) {
@@ -222,7 +220,6 @@ void CellManager::SetText(const std::wstring& text) {
                 if (col >= kCols) {
                     col = 0;
                     ++row;
-                    // При переходе на новую строку увеличиваем высоту
                     if (row < kRows) {
                         IncreaseRowHeight(row);
                     }
@@ -236,7 +233,6 @@ void CellManager::SetText(const std::wstring& text) {
                 }
                 ++row;
                 col = 0;
-                // При переходе на новую строку увеличиваем высоту
                 if (row < kRows) {
                     IncreaseRowHeight(row);
                 }
@@ -356,6 +352,16 @@ bool CellManager::ReplaceWithDashesForAllCells(const std::wstring& targetW) {
         }
     }
     return true;
+}
+
+void CellManager::ApplySelectedFontToAllCells() {
+    if (!textEditor) return;
+    for (int r = 0; r < kRows; ++r) {
+        for (int c = 0; c < kCols; ++c) {
+            if (!cellEdits[r][c]) continue;
+            textEditor->ApplySelectedFontToCell(cellEdits[r][c]);
+        }
+    }
 }
 
 void CellManager::Clear() {
@@ -578,7 +584,6 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
         case WM_SETFOCUS:
             if (pThis->textEditor) {
                 pThis->textEditor->ApplySelectedFontToCell(hwnd);
-                // Устанавливаем курсор в конец текста без выделения
                 int textLength = GetWindowTextLength(hwnd);
                 SendMessage(hwnd, EM_SETSEL, textLength, textLength);
             }
@@ -588,9 +593,7 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
                 pThis->Hide();
                 return 0;
             }
-            // При нажатии Enter увеличиваем высоту текущей строки
             else if (wParam == VK_RETURN) {
-                // Находим строку текущей ячейки
                 for (int r = 0; r < kRows; ++r) {
                     for (int c = 0; c < kCols; ++c) {
                         if (pThis->cellEdits[r][c] == hwnd) {
@@ -605,7 +608,6 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
         case WM_CUT:
         case WM_UNDO:
         case WM_SETTEXT:
-            // Находим строку текущей ячейки и проверяем высоту
             for (int r = 0; r < kRows; ++r) {
                 for (int c = 0; c < kCols; ++c) {
                     if (pThis->cellEdits[r][c] == hwnd) {
@@ -619,13 +621,10 @@ LRESULT CALLBACK CellManager::EditProc(HWND hwnd, UINT message, WPARAM wParam, L
             }
             break;
         case WM_PASTE:
-            // Сначала вызываем оригинальную процедуру для вставки
             if (orig) {
                 CallWindowProc(orig, hwnd, message, wParam, lParam);
             }
-            // Затем применяем шрифт Consolas к вставленному тексту
             pThis->SetCharFormatForCellByHandle(hwnd, L"Consolas", 16);
-            // Находим строку текущей ячейки и проверяем высоту
             for (int r = 0; r < kRows; ++r) {
                 for (int c = 0; c < kCols; ++c) {
                     if (pThis->cellEdits[r][c] == hwnd) {

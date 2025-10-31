@@ -25,9 +25,7 @@ bool DllFunctionManager::AddLibrary(const std::wstring& path) {
     if (!mod) return false;
     FARPROC procRaw = GetProcAddress(mod, "dll_entry");
     if (!procRaw) { FreeLibrary(mod); return false; }
-    // Проверяем через std::function-pointer
     DllProcType fp = reinterpret_cast<DllProcType>(procRaw);
-    // Проверка dummy call невозможна -- доверяем что сигнатура верная.
     DllFunctionItem item;
     item.dllPath = path;
     const wchar_t* fname = PathFindFileNameW(path.c_str());

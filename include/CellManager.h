@@ -68,4 +68,5 @@ private:
 
 public:
     bool ReplaceWithDashesForAllCells(const std::wstring& targetW);
+    void ApplySelectedFontToAllCells();
 };
